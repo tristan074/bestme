@@ -36,16 +36,47 @@ The easiest way to deploy your Next.js app is to use the [Vercel Platform](https
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
 
 
-  # 构建（部署前跑一次）
-  npm run build
+## 部署
 
-  # 启动生产服务
-  nohup npm run start > bestme.log 2>&1 &
+### 构建
 
-  # 查看是否在运行
-  lsof -i :2017
+```bash
+npm run build
+```
 
-  # 关闭
-  kill $(lsof -ti :2017)
+### 服务管理（launchd）
 
-  iPad 访问 http://192.168.3.99:2017
+使用 macOS LaunchAgent 运行，切换用户不会中断服务，崩溃自动重启。
+
+配置文件：`~/Library/LaunchAgents/com.openclaw.bestme.plist`
+
+```bash
+# 启动服务
+launchctl load ~/Library/LaunchAgents/com.openclaw.bestme.plist
+
+# 停止服务
+launchctl unload ~/Library/LaunchAgents/com.openclaw.bestme.plist
+
+# 重启（先停再启）
+launchctl unload ~/Library/LaunchAgents/com.openclaw.bestme.plist
+launchctl load ~/Library/LaunchAgents/com.openclaw.bestme.plist
+
+# 查看状态
+launchctl list | grep bestme
+
+# 查看是否在运行
+lsof -i :2017
+```
+
+### 日志
+
+- 标准输出：`bestme.log`
+- 错误输出：`bestme-error.log`
+
+### 访问
+
+iPad 访问 http://192.168.3.95:2017
+
+### 注意
+
+升级 Node.js 版本后需更新 plist 中的 node 路径。
