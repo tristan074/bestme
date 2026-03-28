@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
 
 /* ── Minecraft Theme CSS Variables ───────────────────────────────────────── */
 :root {
@@ -16,6 +17,7 @@
   --mc-gold:        #FFD700;
   --mc-text:        #FFFFFF;
   --mc-text-dim:    #AAAAAA;
+  --font-press-start: 'Press Start 2P';
 
   --background: var(--mc-bg);
   --foreground: var(--mc-text);
