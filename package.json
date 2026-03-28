@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@libsql/client": "^0.17.2",
+    "@libsql/darwin-arm64": "^0.5.29",
     "@prisma/adapter-libsql": "^7.6.0",
     "@prisma/client": "^7.6.0",
     "next": "16.2.1",
