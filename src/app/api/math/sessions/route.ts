@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { calculateMathPoints } from "@/lib/points/engine";
 import { maybeAwardCheckinPoints } from "@/lib/points/checkin";
+import { ACHIEVEMENTS } from "@/lib/points/achievements";
+
+const getAchievementName = (key: string) => ACHIEVEMENTS.find((a) => a.key === key)?.name || key;
 
 interface QuestionInput {
   expression: string;
@@ -12,6 +15,7 @@ interface QuestionInput {
 }
 
 export async function POST(request: NextRequest) {
+  try {
   const body = await request.json();
   const { specialty, totalTime, questions } = body as {
     specialty: string;
@@ -101,7 +105,7 @@ export async function POST(request: NextRequest) {
   if (correctCount === questions.length) {
     await prisma.achievement.upsert({
       where: { key: "perfect_math" },
-      create: { key: "perfect_math", name: "全对！" },
+      create: { key: "perfect_math", name: getAchievementName("perfect_math") },
       update: {},
     });
   }
@@ -113,14 +117,14 @@ export async function POST(request: NextRequest) {
   ) {
     await prisma.achievement.upsert({
       where: { key: "lightning_calc" },
-      create: { key: "lightning_calc", name: "闪电计算" },
+      create: { key: "lightning_calc", name: getAchievementName("lightning_calc") },
       update: {},
     });
   }
   if (isNewBest) {
     await prisma.achievement.upsert({
       where: { key: "speed_master" },
-      create: { key: "speed_master", name: "速算达人" },
+      create: { key: "speed_master", name: getAchievementName("speed_master") },
       update: {},
     });
   }
@@ -128,4 +132,8 @@ export async function POST(request: NextRequest) {
   await maybeAwardCheckinPoints();
 
   return NextResponse.json({ sessionId: session.id, correctCount, totalCount: questions.length });
+  } catch (error) {
+    console.error("API error:", error);
+    return NextResponse.json({ error: "服务器错误，请重试" }, { status: 500 });
+  }
 }

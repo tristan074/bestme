@@ -42,6 +42,7 @@ function PracticeContent() {
   const [error, setError] = useState<string | null>(null);
 
   const questionStartRef = useRef<number>(Date.now());
+  const totalMsRef = useRef(0);
 
   useEffect(() => {
     fetch(`/api/math/questions?specialty=${specialty}&count=${count}`)
@@ -58,6 +59,7 @@ function PracticeContent() {
 
   const handleTick = useCallback((ms: number) => {
     setTotalMs(ms);
+    totalMsRef.current = ms;
   }, []);
 
   async function handleSubmit(value: number) {
@@ -90,7 +92,7 @@ function PracticeContent() {
           const res = await fetch("/api/math/sessions", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ specialty, totalTime: totalMs, questions: newAnswered }),
+            body: JSON.stringify({ specialty, totalTime: totalMsRef.current, questions: newAnswered }),
           });
           const data = await res.json();
           sessionStorage.setItem(
@@ -100,7 +102,7 @@ function PracticeContent() {
               count,
               correctCount: data.correctCount,
               totalCount: data.totalCount,
-              totalMs,
+              totalMs: totalMsRef.current,
               questions: newAnswered,
             })
           );
@@ -113,7 +115,7 @@ function PracticeContent() {
               count,
               correctCount: newAnswered.filter((a) => a.correct).length,
               totalCount: newAnswered.length,
-              totalMs,
+              totalMs: totalMsRef.current,
               questions: newAnswered,
             })
           );

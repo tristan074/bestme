@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 
 // GET: find active notebook, return due characters in learning status
 export async function GET() {
+  try {
   const activeNotebook = await prisma.notebook.findFirst({
     where: { isActive: true, archived: false },
   });
@@ -36,4 +37,8 @@ export async function GET() {
     notebookName: activeNotebook.name,
     characters,
   });
+  } catch (error) {
+    console.error("API error:", error);
+    return NextResponse.json({ error: "服务器错误，请重试" }, { status: 500 });
+  }
 }

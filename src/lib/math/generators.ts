@@ -49,23 +49,29 @@ export function generateCarrying(count: number): MathProblem[] {
 }
 
 export function generateTwoDigit(count: number): MathProblem[] {
-  const all: MathProblem[] = [];
+  const seen = new Set<string>();
+  const results: MathProblem[] = [];
 
-  // Addition: at least one two-digit operand, result <= 100
-  for (let a = 10; a <= 99; a++) {
-    for (let b = 1; b <= 99; b++) {
-      if (a + b <= 100) {
-        all.push({ a, b, answer: a + b, expression: `${a} + ${b}` });
-      }
+  while (results.length < count) {
+    const isAddition = Math.random() < 0.5;
+    const a = Math.floor(Math.random() * 90) + 10; // 10-99
+
+    if (isAddition) {
+      const maxB = 100 - a;
+      if (maxB < 1) continue;
+      const b = Math.floor(Math.random() * maxB) + 1;
+      const expr = `${a} + ${b}`;
+      if (seen.has(expr)) continue;
+      seen.add(expr);
+      results.push({ a, b, answer: a + b, expression: expr });
+    } else {
+      const b = Math.floor(Math.random() * a) + 1; // 1 to a
+      const expr = `${a} − ${b}`;
+      if (seen.has(expr)) continue;
+      seen.add(expr);
+      results.push({ a, b, answer: a - b, expression: expr });
     }
   }
 
-  // Subtraction: a is two-digit, result >= 0
-  for (let a = 10; a <= 99; a++) {
-    for (let b = 1; b <= a; b++) {
-      all.push({ a, b, answer: a - b, expression: `${a} − ${b}` });
-    }
-  }
-
-  return shuffle(all).slice(0, count);
+  return results;
 }

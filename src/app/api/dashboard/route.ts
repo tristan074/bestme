@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { ACHIEVEMENTS } from "@/lib/points/achievements";
 
 export async function GET() {
+  try {
   // 1. Math trends: last 60 sessions grouped by specialty
   const mathSessions = await prisma.mathSession.findMany({
     orderBy: { createdAt: "desc" },
@@ -159,4 +160,8 @@ export async function GET() {
     totalPoints,
     achievements,
   });
+  } catch (error) {
+    console.error("API error:", error);
+    return NextResponse.json({ error: "服务器错误，请重试" }, { status: 500 });
+  }
 }

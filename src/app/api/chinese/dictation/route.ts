@@ -3,6 +3,9 @@ import { prisma } from "@/lib/prisma";
 import { getNextReview } from "@/lib/chinese/spaced-repetition";
 import { calculateDictationPoints } from "@/lib/points/engine";
 import { maybeAwardCheckinPoints } from "@/lib/points/checkin";
+import { ACHIEVEMENTS } from "@/lib/points/achievements";
+
+const getAchievementName = (key: string) => ACHIEVEMENTS.find((a) => a.key === key)?.name || key;
 
 interface DictationResult {
   characterId: number;
@@ -11,6 +14,7 @@ interface DictationResult {
 
 // POST: receive dictation results, update schedules, return summary
 export async function POST(request: NextRequest) {
+  try {
   const body = await request.json();
   const { results } = body as { results: DictationResult[] };
 
@@ -80,7 +84,7 @@ export async function POST(request: NextRequest) {
   if (correct === results.length) {
     await prisma.achievement.upsert({
       where: { key: "perfect_dictation" },
-      create: { key: "perfect_dictation", name: "听写满分" },
+      create: { key: "perfect_dictation", name: getAchievementName("perfect_dictation") },
       update: {},
     });
   }
@@ -96,7 +100,7 @@ export async function POST(request: NextRequest) {
     if (masteredCount >= 100) {
       await prisma.achievement.upsert({
         where: { key: "hundred_chars" },
-        create: { key: "hundred_chars", name: "百字达人" },
+        create: { key: "hundred_chars", name: getAchievementName("hundred_chars") },
         update: {},
       });
     }
@@ -105,4 +109,8 @@ export async function POST(request: NextRequest) {
   await maybeAwardCheckinPoints();
 
   return NextResponse.json({ total: results.length, correct, wrong });
+  } catch (error) {
+    console.error("API error:", error);
+    return NextResponse.json({ error: "服务器错误，请重试" }, { status: 500 });
+  }
 }

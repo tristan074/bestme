@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { ACHIEVEMENTS } from "@/lib/points/achievements";
 
 export async function GET() {
+  try {
   // Sum all points
   const aggregate = await prisma.pointsLog.aggregate({ _sum: { points: true } });
   const totalPoints = aggregate._sum.points ?? 0;
@@ -24,4 +25,8 @@ export async function GET() {
   });
 
   return NextResponse.json({ totalPoints, unlockedAchievements, recentLogs });
+  } catch (error) {
+    console.error("API error:", error);
+    return NextResponse.json({ error: "服务器错误，请重试" }, { status: 500 });
+  }
 }

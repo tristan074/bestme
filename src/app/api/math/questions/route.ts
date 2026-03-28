@@ -7,6 +7,7 @@ import {
 } from "@/lib/math/generators";
 
 export async function GET(request: NextRequest) {
+  try {
   const { searchParams } = new URL(request.url);
   const specialty = searchParams.get("specialty");
   const count = parseInt(searchParams.get("count") || "20", 10);
@@ -50,4 +51,8 @@ export async function GET(request: NextRequest) {
   }
 
   return NextResponse.json({ questions });
+  } catch (error) {
+    console.error("API error:", error);
+    return NextResponse.json({ error: "服务器错误，请重试" }, { status: 500 });
+  }
 }

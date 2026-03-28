@@ -13,14 +13,23 @@ export async function maybeAwardCheckinPoints(): Promise<number> {
   });
   if (alreadyAwarded) return 0;
 
-  // Calculate streak
+  // Calculate streak - single query
+  const allCheckins = await prisma.dailyCheckin.findMany({
+    where: { math: true, chinese: true },
+    orderBy: { date: "desc" },
+    take: 365,
+  });
+
   let streak = 0;
-  for (let i = 0; i < 365; i++) {
-    const d = new Date();
-    d.setDate(d.getDate() - i);
-    const dateStr = d.toISOString().slice(0, 10);
-    const c = await prisma.dailyCheckin.findUnique({ where: { date: dateStr } });
-    if (c?.math && c?.chinese) { streak++; } else { break; }
+  for (let i = 0; i < allCheckins.length; i++) {
+    const expected = new Date();
+    expected.setDate(expected.getDate() - i);
+    const expectedStr = expected.toISOString().slice(0, 10);
+    if (allCheckins[i].date === expectedStr) {
+      streak++;
+    } else {
+      break;
+    }
   }
 
   const points = calculateCheckinPoints(streak);

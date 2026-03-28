@@ -4,6 +4,7 @@ import { getCharPinyin, parseCharacters } from "@/lib/chinese/pinyin";
 
 // GET: list characters by notebookId, ordered by lesson then id
 export async function GET(request: NextRequest) {
+  try {
   const { searchParams } = new URL(request.url);
   const notebookId = Number(searchParams.get("notebookId"));
   if (!notebookId) {
@@ -15,10 +16,15 @@ export async function GET(request: NextRequest) {
     orderBy: [{ lesson: "asc" }, { id: "asc" }],
   });
   return NextResponse.json(characters);
+  } catch (error) {
+    console.error("API error:", error);
+    return NextResponse.json({ error: "服务器错误，请重试" }, { status: 500 });
+  }
 }
 
 // POST: batch import - parse text, auto-generate pinyin, skip duplicates
 export async function POST(request: NextRequest) {
+  try {
   const body = await request.json();
   const { notebookId, text, lesson } = body as {
     notebookId: number;
@@ -57,10 +63,15 @@ export async function POST(request: NextRequest) {
   }
 
   return NextResponse.json({ imported, skipped });
+  } catch (error) {
+    console.error("API error:", error);
+    return NextResponse.json({ error: "服务器错误，请重试" }, { status: 500 });
+  }
 }
 
 // PATCH: batch update status
 export async function PATCH(request: NextRequest) {
+  try {
   const body = await request.json();
   const { ids, status } = body as { ids: number[]; status: string };
 
@@ -89,4 +100,8 @@ export async function PATCH(request: NextRequest) {
   }
 
   return NextResponse.json({ updated: ids.length });
+  } catch (error) {
+    console.error("API error:", error);
+    return NextResponse.json({ error: "服务器错误，请重试" }, { status: 500 });
+  }
 }
