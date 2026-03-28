@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { calculateMathPoints } from "@/lib/points/engine";
+import { maybeAwardCheckinPoints } from "@/lib/points/checkin";
 
 interface QuestionInput {
   expression: string;
@@ -73,6 +75,57 @@ export async function POST(request: NextRequest) {
     create: { date: today, math: true },
     update: { math: true },
   });
+
+  // Points: check for new personal best (100% sessions only)
+  let isNewBest = false;
+  if (correctCount === questions.length) {
+    // Fetch all previous sessions for this specialty, filter perfect ones in JS
+    // (Prisma can't compare two columns directly in a WHERE clause)
+    const prevSessions = await prisma.mathSession.findMany({
+      where: { specialty, id: { not: session.id } },
+      select: { totalTime: true, correctCount: true, totalCount: true },
+    });
+    const perfectPrev = prevSessions.filter((s) => s.correctCount === s.totalCount);
+    if (perfectPrev.length === 0) {
+      isNewBest = true;
+    } else {
+      const bestTime = Math.min(...perfectPrev.map((s) => s.totalTime));
+      isNewBest = totalTime < bestTime;
+    }
+  }
+
+  const mathPoints = calculateMathPoints(correctCount, questions.length, isNewBest);
+  await prisma.pointsLog.create({ data: { points: mathPoints.total, reason: "数学练习" } });
+
+  // Achievements
+  if (correctCount === questions.length) {
+    await prisma.achievement.upsert({
+      where: { key: "perfect_math" },
+      create: { key: "perfect_math", name: "全对！" },
+      update: {},
+    });
+  }
+  if (
+    specialty === "multiplication" &&
+    questions.length >= 20 &&
+    totalTime <= 60000 &&
+    correctCount === questions.length
+  ) {
+    await prisma.achievement.upsert({
+      where: { key: "lightning_calc" },
+      create: { key: "lightning_calc", name: "闪电计算" },
+      update: {},
+    });
+  }
+  if (isNewBest) {
+    await prisma.achievement.upsert({
+      where: { key: "speed_master" },
+      create: { key: "speed_master", name: "速算达人" },
+      update: {},
+    });
+  }
+
+  await maybeAwardCheckinPoints();
 
   return NextResponse.json({ sessionId: session.id, correctCount, totalCount: questions.length });
 }

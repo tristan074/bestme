@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getNextReview } from "@/lib/chinese/spaced-repetition";
+import { calculateDictationPoints } from "@/lib/points/engine";
+import { maybeAwardCheckinPoints } from "@/lib/points/checkin";
 
 interface DictationResult {
   characterId: number;
@@ -69,6 +71,38 @@ export async function POST(request: NextRequest) {
     create: { date: today, chinese: true },
     update: { chinese: true },
   });
+
+  // Points
+  const dictationPoints = calculateDictationPoints(correct, results.length);
+  await prisma.pointsLog.create({ data: { points: dictationPoints.total, reason: "汉字听写" } });
+
+  // Achievements
+  if (correct === results.length) {
+    await prisma.achievement.upsert({
+      where: { key: "perfect_dictation" },
+      create: { key: "perfect_dictation", name: "听写满分" },
+      update: {},
+    });
+  }
+
+  // "hundred_chars": count mastered characters in active notebook
+  const activeNotebook = await prisma.notebook.findFirst({
+    where: { isActive: true },
+  });
+  if (activeNotebook) {
+    const masteredCount = await prisma.character.count({
+      where: { notebookId: activeNotebook.id, status: "mastered" },
+    });
+    if (masteredCount >= 100) {
+      await prisma.achievement.upsert({
+        where: { key: "hundred_chars" },
+        create: { key: "hundred_chars", name: "百字达人" },
+        update: {},
+      });
+    }
+  }
+
+  await maybeAwardCheckinPoints();
 
   return NextResponse.json({ total: results.length, correct, wrong });
 }
