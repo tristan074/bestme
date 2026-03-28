@@ -13,10 +13,10 @@ interface HeatmapCalendarProps {
 }
 
 function getColor(checkin: CheckinDay | undefined): string {
-  if (!checkin) return "bg-white/10";
-  if (checkin.math && checkin.chinese) return "bg-green-400";
-  if (checkin.math || checkin.chinese) return "bg-green-700";
-  return "bg-white/10";
+  if (!checkin) return "bg-[#3A3A3A]";
+  if (checkin.math && checkin.chinese) return "bg-[#5B8731]";
+  if (checkin.math || checkin.chinese) return "bg-[#3A5A20]";
+  return "bg-[#3A3A3A]";
 }
 
 function getLabel(checkin: CheckinDay | undefined, date: string): string {
@@ -61,7 +61,7 @@ export default function HeatmapCalendar({ checkins }: HeatmapCalendarProps) {
           return (
             <div
               key={date}
-              className={`w-5 h-5 rounded-sm cursor-pointer transition-opacity hover:opacity-80 ${getColor(checkin)}`}
+              className={`w-5 h-5 cursor-pointer transition-opacity hover:opacity-80 border border-[#2D2D2D] ${getColor(checkin)}`}
               onMouseEnter={(e) => {
                 const rect = (e.target as HTMLElement).getBoundingClientRect();
                 setTooltip({
@@ -78,17 +78,17 @@ export default function HeatmapCalendar({ checkins }: HeatmapCalendarProps) {
 
       {tooltip && (
         <div
-          className="fixed z-50 pointer-events-none px-2 py-1 text-xs text-white bg-gray-900 rounded shadow-lg"
+          className="fixed z-50 pointer-events-none px-2 py-1 text-xs text-white bg-[#1A1A1A] border border-[#6B6B6B]"
           style={{ left: tooltip.x, top: tooltip.y - 32 }}
         >
           {tooltip.text}
         </div>
       )}
 
-      <div className="flex items-center gap-2 mt-3 text-xs text-white/50">
-        <span className="w-3 h-3 rounded-sm bg-white/10 inline-block" /> 无
-        <span className="w-3 h-3 rounded-sm bg-green-700 inline-block ml-2" /> 部分
-        <span className="w-3 h-3 rounded-sm bg-green-400 inline-block ml-2" /> 全完成
+      <div className="flex items-center gap-2 mt-3 text-xs text-[#AAAAAA]">
+        <span className="w-3 h-3 border border-[#2D2D2D] bg-[#3A3A3A] inline-block" /> 无
+        <span className="w-3 h-3 border border-[#2D2D2D] bg-[#3A5A20] inline-block ml-2" /> 部分
+        <span className="w-3 h-3 border border-[#2D2D2D] bg-[#5B8731] inline-block ml-2" /> 全完成
       </div>
     </div>
   );

@@ -23,11 +23,18 @@ const SUBJECT_CARDS = [
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-gradient-to-br from-indigo-500 via-indigo-600 to-purple-700 flex flex-col items-center justify-center px-6 py-12">
+    <main className="min-h-screen bg-[#2D2D2D] flex flex-col items-center justify-center px-6 py-12">
       {/* Header */}
       <div className="text-center mb-12">
-        <h1 className="text-5xl font-bold text-white mb-2">BestMe</h1>
-        <p className="text-xl text-indigo-100">Fred 的学习助手</p>
+        <h1
+          className="text-4xl font-bold text-white mb-3"
+          style={{ fontFamily: "var(--font-press-start), monospace", textShadow: "3px 3px 0 rgba(0,0,0,0.6)" }}
+        >
+          BestMe
+        </h1>
+        <p className="text-lg text-[#AAAAAA]" style={{ textShadow: "2px 2px 0 rgba(0,0,0,0.4)" }}>
+          Fred 的学习助手
+        </p>
       </div>
 
       {/* Subject cards */}
@@ -36,12 +43,17 @@ export default function Home() {
           <Link
             key={card.href}
             href={card.href}
-            className="flex items-center gap-5 bg-white/15 hover:bg-white/25 active:bg-white/30 backdrop-blur-sm rounded-2xl px-6 py-5 transition-colors"
+            className="mc-panel flex items-center gap-5 px-6 py-5 hover:brightness-125 active:scale-95 transition-all"
           >
             <span className="text-6xl leading-none shrink-0">{card.emoji}</span>
             <div>
-              <p className="text-2xl font-bold text-white">{card.title}</p>
-              <p className="text-sm text-indigo-100 mt-0.5">{card.description}</p>
+              <p
+                className="text-xl font-bold text-white"
+                style={{ fontFamily: "var(--font-press-start), monospace", textShadow: "2px 2px 0 rgba(0,0,0,0.5)" }}
+              >
+                {card.title}
+              </p>
+              <p className="text-sm text-[#AAAAAA] mt-1">{card.description}</p>
             </div>
           </Link>
         ))}

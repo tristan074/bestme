@@ -49,30 +49,42 @@ export default function ImportPage() {
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-gradient-to-br from-red-400 to-pink-600 flex items-center justify-center">
-        <div className="text-white text-2xl">加载中...</div>
+      <main className="min-h-screen bg-[#2D2D2D] flex items-center justify-center">
+        <div
+          className="text-white text-xl animate-pulse"
+          style={{ fontFamily: "var(--font-press-start), monospace", textShadow: "2px 2px 0 rgba(0,0,0,0.5)" }}
+        >
+          加载中...
+        </div>
       </main>
     );
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-red-400 via-rose-500 to-pink-600 flex flex-col items-center p-8 gap-8">
-      <h1 className="text-4xl font-extrabold text-white drop-shadow-lg mt-4">导入生字</h1>
+    <main className="min-h-screen bg-[#2D2D2D] flex flex-col items-center p-8 gap-8">
+      <h1
+        className="text-2xl font-bold text-white mt-4"
+        style={{ fontFamily: "var(--font-press-start), monospace", textShadow: "3px 3px 0 rgba(0,0,0,0.6)" }}
+      >
+        导入生字
+      </h1>
 
       {/* Active notebook info */}
-      <div className="w-full max-w-lg rounded-3xl bg-white/90 p-5 shadow-xl">
+      <div className="w-full max-w-lg mc-panel p-5">
         {activeNotebook ? (
           <div className="flex items-center gap-3">
             <span className="text-2xl">📔</span>
             <div>
-              <div className="text-sm text-gray-500">当前本子</div>
-              <div className="text-2xl font-bold text-gray-800">{activeNotebook.name}</div>
+              <div className="text-sm text-[#AAAAAA]">当前本子</div>
+              <div className="text-xl font-bold text-white" style={{ textShadow: "2px 2px 0 rgba(0,0,0,0.5)" }}>
+                {activeNotebook.name}
+              </div>
             </div>
           </div>
         ) : (
-          <div className="text-center text-gray-500 text-lg">
+          <div className="text-center text-[#AAAAAA] text-base">
             还没有本子，请先
-            <a href="/chinese/notebooks" className="text-rose-500 font-bold ml-1">创建一个本子</a>
+            <a href="/chinese/notebooks" className="text-[#2A9FD6] font-bold ml-1">创建一个本子</a>
           </div>
         )}
       </div>
@@ -85,7 +97,7 @@ export default function ImportPage() {
             value={lesson}
             onChange={(e) => setLesson(e.target.value)}
             placeholder="课程名称（选填，如：第一课）"
-            className="w-full rounded-2xl px-5 py-4 text-xl bg-white/90 outline-none"
+            className="w-full mc-panel px-5 py-4 text-xl text-white bg-[#3A3A3A] outline-none placeholder:text-[#777]"
           />
 
           {/* Text area */}
@@ -94,17 +106,15 @@ export default function ImportPage() {
             onChange={(e) => setText(e.target.value)}
             placeholder="在这里粘贴包含生字的文本..."
             rows={6}
-            className="w-full rounded-2xl px-5 py-4 text-xl bg-white/90 outline-none resize-none"
+            className="w-full mc-panel px-5 py-4 text-xl text-white bg-[#3A3A3A] outline-none resize-none placeholder:text-[#777]"
           />
 
           <button
             type="submit"
             disabled={!text.trim() || importing}
             className={[
-              "w-full py-5 rounded-3xl text-2xl font-extrabold shadow-xl transition-all",
-              text.trim() && !importing
-                ? "bg-yellow-400 text-white active:scale-95"
-                : "bg-white/30 text-white/50 cursor-not-allowed",
+              "mc-btn mc-btn-gold w-full py-5 text-base",
+              text.trim() && !importing ? "active:scale-95" : "opacity-50 cursor-not-allowed",
             ].join(" ")}
           >
             {importing ? "导入中..." : "导入生字"}
@@ -114,16 +124,23 @@ export default function ImportPage() {
 
       {/* Result summary */}
       {result && (
-        <div className="w-full max-w-lg rounded-3xl bg-white/90 p-6 shadow-xl text-center">
-          <div className="text-3xl font-extrabold text-green-600 mb-2">导入完成</div>
+        <div className="w-full max-w-lg mc-panel p-6 text-center">
+          <div
+            className="text-xl font-bold text-[#5B8731] mb-4"
+            style={{ fontFamily: "var(--font-press-start), monospace", textShadow: "2px 2px 0 rgba(0,0,0,0.5)" }}
+          >
+            导入完成
+          </div>
           <div className="flex justify-center gap-8 text-xl">
             <div>
-              <div className="text-4xl font-bold text-gray-800">{result.imported}</div>
-              <div className="text-gray-500">新增</div>
+              <div className="text-4xl font-bold text-[#FFD700]" style={{ textShadow: "2px 2px 0 rgba(0,0,0,0.5)" }}>
+                {result.imported}
+              </div>
+              <div className="text-[#AAAAAA]">新增</div>
             </div>
             <div>
-              <div className="text-4xl font-bold text-gray-400">{result.skipped}</div>
-              <div className="text-gray-500">已存在</div>
+              <div className="text-4xl font-bold text-[#AAAAAA]">{result.skipped}</div>
+              <div className="text-[#AAAAAA]">已存在</div>
             </div>
           </div>
         </div>

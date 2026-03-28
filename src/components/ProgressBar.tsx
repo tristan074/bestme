@@ -10,16 +10,21 @@ export default function ProgressBar({ label, value, max, color }: ProgressBarPro
 
   return (
     <div className="space-y-1">
-      <div className="flex justify-between text-sm text-white/80">
+      <div className="flex justify-between text-sm text-[#AAAAAA]">
         <span>{label}</span>
         <span>
           {value} / {max}
         </span>
       </div>
-      <div className="w-full bg-white/10 rounded-full h-3 overflow-hidden">
+      {/* XP bar style */}
+      <div className="w-full mc-xp-bar h-4 overflow-hidden">
         <div
-          className="h-full rounded-full transition-all duration-500"
-          style={{ width: `${pct}%`, backgroundColor: color }}
+          className="h-full transition-all duration-500"
+          style={{
+            width: `${pct}%`,
+            background: `linear-gradient(to bottom, ${color}CC, ${color})`,
+            boxShadow: `0 0 6px ${color}66`,
+          }}
         />
       </div>
     </div>

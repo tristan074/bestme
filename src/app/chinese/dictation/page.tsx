@@ -69,8 +69,13 @@ export default function DictationPage() {
   // ── Loading ──────────────────────────────────────────────────────────────
   if (phase === "loading") {
     return (
-      <main className="min-h-screen bg-gradient-to-br from-red-400 to-pink-600 flex items-center justify-center">
-        <div className="text-white text-2xl">加载中...</div>
+      <main className="min-h-screen bg-[#2D2D2D] flex items-center justify-center">
+        <div
+          className="text-white text-xl animate-pulse"
+          style={{ fontFamily: "var(--font-press-start), monospace", textShadow: "2px 2px 0 rgba(0,0,0,0.5)" }}
+        >
+          加载中...
+        </div>
       </main>
     );
   }
@@ -78,14 +83,17 @@ export default function DictationPage() {
   // ── Empty ────────────────────────────────────────────────────────────────
   if (phase === "empty") {
     return (
-      <main className="min-h-screen bg-gradient-to-br from-red-400 via-rose-500 to-pink-600 flex flex-col items-center justify-center gap-8 p-8">
+      <main className="min-h-screen bg-[#2D2D2D] flex flex-col items-center justify-center gap-8 p-8">
         <div className="text-8xl">🎉</div>
-        <div className="text-3xl font-extrabold text-white text-center drop-shadow-lg">
+        <div
+          className="text-xl font-bold text-white text-center"
+          style={{ fontFamily: "var(--font-press-start), monospace", textShadow: "3px 3px 0 rgba(0,0,0,0.6)" }}
+        >
           今天没有需要复习的字！
         </div>
         <button
           onClick={() => router.push("/chinese")}
-          className="px-10 py-5 rounded-3xl bg-white text-rose-500 text-2xl font-extrabold shadow-xl active:scale-95 transition-all"
+          className="mc-btn mc-btn-green px-10 py-5 text-base active:scale-95"
         >
           返回语文
         </button>
@@ -96,21 +104,26 @@ export default function DictationPage() {
   // ── Start screen ─────────────────────────────────────────────────────────
   if (phase === "start") {
     return (
-      <main className="min-h-screen bg-gradient-to-br from-red-400 via-rose-500 to-pink-600 flex flex-col items-center justify-center gap-10 p-8">
+      <main className="min-h-screen bg-[#2D2D2D] flex flex-col items-center justify-center gap-10 p-8">
         <div className="text-8xl">✍️</div>
         <div className="text-center">
-          <div className="text-3xl font-extrabold text-white drop-shadow-lg mb-2">今日听写</div>
-          <div className="text-xl text-white/80">共 {total} 个字需要复习</div>
+          <div
+            className="text-xl font-bold text-white mb-2"
+            style={{ fontFamily: "var(--font-press-start), monospace", textShadow: "3px 3px 0 rgba(0,0,0,0.6)" }}
+          >
+            今日听写
+          </div>
+          <div className="text-base text-[#AAAAAA]">共 {total} 个字需要复习</div>
         </div>
         <button
           onClick={handleStart}
-          className="px-10 py-6 rounded-3xl bg-yellow-400 text-white text-2xl font-extrabold shadow-xl active:scale-95 transition-all"
+          className="mc-btn mc-btn-gold px-10 py-6 text-base active:scale-95"
         >
           开始听写 🎧
         </button>
         <button
           onClick={() => router.push("/chinese")}
-          className="text-white/70 text-lg underline"
+          className="text-[#AAAAAA] text-sm underline"
         >
           返回
         </button>
@@ -120,16 +133,19 @@ export default function DictationPage() {
 
   // ── Session ──────────────────────────────────────────────────────────────
   return (
-    <main className="min-h-screen bg-gradient-to-br from-red-400 via-rose-500 to-pink-600 flex flex-col items-center justify-between p-8 gap-8">
+    <main className="min-h-screen bg-[#2D2D2D] flex flex-col items-center justify-between p-8 gap-8">
       {/* Header */}
       <div className="w-full max-w-lg flex items-center justify-between mt-4">
         <button
           onClick={() => router.push("/chinese")}
-          className="text-white/80 text-lg"
+          className="text-[#AAAAAA] text-base hover:text-white transition-colors"
         >
           ✕ 退出
         </button>
-        <div className="text-white text-xl font-bold">
+        <div
+          className="text-white text-base font-bold"
+          style={{ fontFamily: "var(--font-press-start), monospace", textShadow: "2px 2px 0 rgba(0,0,0,0.5)" }}
+        >
           第 {currentIndex + 1} / {total} 个
         </div>
         <div className="w-12" />
@@ -150,22 +166,22 @@ export default function DictationPage() {
       <div className="w-full max-w-lg flex flex-col gap-4">
         <button
           onClick={handleReplay}
-          className="w-full py-5 rounded-3xl bg-white/20 text-white text-2xl font-bold shadow active:scale-95 transition-all"
+          className="mc-btn w-full py-5 text-base active:scale-95"
         >
           再听一遍
         </button>
         <button
           onClick={handleNext}
-          className="w-full py-5 rounded-3xl bg-yellow-400 text-white text-2xl font-extrabold shadow-xl active:scale-95 transition-all"
+          className="mc-btn mc-btn-gold w-full py-5 text-base active:scale-95"
         >
           {isLast ? "听写完毕 ✓" : "下一个 →"}
         </button>
       </div>
 
-      {/* Progress bar */}
-      <div className="w-full max-w-lg h-3 bg-white/20 rounded-full overflow-hidden mb-2">
+      {/* XP progress bar */}
+      <div className="w-full max-w-lg mc-xp-bar h-5 overflow-hidden mb-2">
         <div
-          className="h-full bg-white rounded-full transition-all duration-300"
+          className="mc-xp-bar-fill h-full"
           style={{ width: `${progress}%` }}
         />
       </div>

@@ -26,12 +26,15 @@ export default function NumericInput({ onSubmit }: NumericInputProps) {
 
   return (
     <div className="flex flex-col items-center gap-4 w-full max-w-xs">
-      {/* Display box */}
-      <div className="w-full rounded-2xl bg-white border-4 border-blue-300 text-center text-5xl font-bold text-gray-800 py-4 min-h-[80px] flex items-center justify-center shadow-inner">
-        {input === "" ? <span className="text-gray-300">?</span> : input}
+      {/* Display box — inventory slot style */}
+      <div
+        className="w-full mc-panel text-center text-5xl font-bold text-white py-4 min-h-[80px] flex items-center justify-center"
+        style={{ fontFamily: "var(--font-press-start), monospace", textShadow: "2px 2px 0 rgba(0,0,0,0.5)" }}
+      >
+        {input === "" ? <span className="text-[#6B6B6B]">?</span> : input}
       </div>
 
-      {/* Keypad 3x4 grid */}
+      {/* Keypad 3×4 grid — inventory slot style keys */}
       <div className="grid grid-cols-3 gap-3 w-full">
         {KEYS.map((key) => {
           const isOk = key === "ok";
@@ -41,13 +44,10 @@ export default function NumericInput({ onSubmit }: NumericInputProps) {
               key={key}
               onClick={() => handleKey(key)}
               className={[
-                "rounded-2xl py-5 text-2xl font-bold shadow-md active:scale-95 transition-transform select-none",
-                isOk
-                  ? "bg-green-500 text-white"
-                  : isDel
-                  ? "bg-red-100 text-red-600"
-                  : "bg-white text-gray-800",
+                "mc-btn py-5 text-xl active:scale-95",
+                isOk ? "mc-btn-green" : isDel ? "" : "",
               ].join(" ")}
+              style={isDel ? { color: "#FF6666" } : undefined}
             >
               {isOk ? "确认" : isDel ? "⌫" : key}
             </button>

@@ -74,15 +74,25 @@ export default function NotebooksPage() {
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-gradient-to-br from-red-400 to-pink-600 flex items-center justify-center">
-        <div className="text-white text-2xl">加载中...</div>
+      <main className="min-h-screen bg-[#2D2D2D] flex items-center justify-center">
+        <div
+          className="text-white text-xl animate-pulse"
+          style={{ fontFamily: "var(--font-press-start), monospace", textShadow: "2px 2px 0 rgba(0,0,0,0.5)" }}
+        >
+          加载中...
+        </div>
       </main>
     );
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-red-400 via-rose-500 to-pink-600 flex flex-col items-center p-8 gap-8">
-      <h1 className="text-4xl font-extrabold text-white drop-shadow-lg mt-4">本子管理</h1>
+    <main className="min-h-screen bg-[#2D2D2D] flex flex-col items-center p-8 gap-8">
+      <h1
+        className="text-2xl font-bold text-white mt-4"
+        style={{ fontFamily: "var(--font-press-start), monospace", textShadow: "3px 3px 0 rgba(0,0,0,0.6)" }}
+      >
+        本子管理
+      </h1>
 
       {/* Create new notebook */}
       <form onSubmit={handleCreate} className="w-full max-w-lg flex gap-3">
@@ -91,12 +101,12 @@ export default function NotebooksPage() {
           value={newName}
           onChange={(e) => setNewName(e.target.value)}
           placeholder="新本子名称..."
-          className="flex-1 rounded-2xl px-5 py-4 text-xl bg-white/90 outline-none"
+          className="flex-1 mc-panel px-5 py-4 text-xl text-white bg-[#3A3A3A] outline-none placeholder:text-[#777]"
         />
         <button
           type="submit"
           disabled={!newName.trim() || submitting}
-          className="rounded-2xl px-6 py-4 text-xl font-bold bg-yellow-400 text-white disabled:opacity-50 active:scale-95 transition-all"
+          className="mc-btn mc-btn-gold px-6 py-4 text-base disabled:opacity-50"
         >
           创建
         </button>
@@ -105,14 +115,14 @@ export default function NotebooksPage() {
       {/* Notebooks list */}
       <div className="w-full max-w-lg flex flex-col gap-4">
         {notebooks.length === 0 && (
-          <div className="text-center text-white/70 text-xl">还没有本子，创建一个吧</div>
+          <div className="text-center text-[#AAAAAA] text-base">还没有本子，创建一个吧</div>
         )}
         {notebooks.map((nb) => (
           <div
             key={nb.id}
             className={[
-              "rounded-3xl p-5 shadow-xl bg-white/90 flex flex-col gap-3",
-              nb.isActive ? "ring-4 ring-yellow-400" : "",
+              "mc-panel p-5 flex flex-col gap-3",
+              nb.isActive ? "outline outline-2 outline-[#FFD700]" : "",
             ].join(" ")}
           >
             <div className="flex items-center gap-3">
@@ -121,18 +131,25 @@ export default function NotebooksPage() {
                   type="text"
                   value={editName}
                   onChange={(e) => setEditName(e.target.value)}
-                  className="flex-1 rounded-xl px-4 py-2 text-xl bg-gray-100 outline-none"
+                  className="flex-1 bg-[#3A3A3A] border border-[#6B6B6B] px-4 py-2 text-xl text-white outline-none"
                   autoFocus
                 />
               ) : (
-                <span className="flex-1 text-2xl font-bold text-gray-800">{nb.name}</span>
+                <span className="flex-1 text-xl font-bold text-white" style={{ textShadow: "1px 1px 0 rgba(0,0,0,0.5)" }}>
+                  {nb.name}
+                </span>
               )}
               {nb.isActive && (
-                <span className="bg-yellow-400 text-white text-sm font-bold px-3 py-1 rounded-full">当前</span>
+                <span
+                  className="bg-[#FFD700] text-[#3A2800] text-xs font-bold px-3 py-1"
+                  style={{ fontFamily: "var(--font-press-start), monospace" }}
+                >
+                  当前
+                </span>
               )}
             </div>
 
-            <div className="text-gray-500 text-lg">{nb._count.characters} 个生字</div>
+            <div className="text-[#AAAAAA] text-base">{nb._count.characters} 个生字</div>
 
             <div className="flex flex-wrap gap-2">
               {editingId === nb.id ? (
@@ -140,13 +157,13 @@ export default function NotebooksPage() {
                   <button
                     onClick={() => handleRename(nb.id)}
                     disabled={submitting}
-                    className="px-4 py-2 rounded-xl bg-green-500 text-white font-bold text-sm active:scale-95 transition-all"
+                    className="mc-btn mc-btn-green px-4 py-2 text-xs"
                   >
                     保存
                   </button>
                   <button
                     onClick={() => { setEditingId(null); setEditName(""); }}
-                    className="px-4 py-2 rounded-xl bg-gray-200 text-gray-700 font-bold text-sm active:scale-95 transition-all"
+                    className="mc-btn px-4 py-2 text-xs"
                   >
                     取消
                   </button>
@@ -155,21 +172,21 @@ export default function NotebooksPage() {
                 <>
                   <button
                     onClick={() => { setEditingId(nb.id); setEditName(nb.name); }}
-                    className="px-4 py-2 rounded-xl bg-blue-100 text-blue-700 font-bold text-sm active:scale-95 transition-all"
+                    className="mc-btn px-4 py-2 text-xs"
                   >
                     重命名
                   </button>
                   {!nb.isActive && (
                     <button
                       onClick={() => handleActivate(nb.id)}
-                      className="px-4 py-2 rounded-xl bg-yellow-100 text-yellow-700 font-bold text-sm active:scale-95 transition-all"
+                      className="mc-btn mc-btn-gold px-4 py-2 text-xs"
                     >
                       设为当前
                     </button>
                   )}
                   <button
                     onClick={() => handleArchive(nb.id)}
-                    className="px-4 py-2 rounded-xl bg-gray-100 text-gray-500 font-bold text-sm active:scale-95 transition-all"
+                    className="mc-btn px-4 py-2 text-xs"
                   >
                     归档
                   </button>

@@ -17,5 +17,12 @@ export default function Timer({ running, onTick }: TimerProps) {
   }, [running]); // eslint-disable-line
   const seconds = Math.floor(elapsed / 1000);
   const minutes = Math.floor(seconds / 60);
-  return <div className="text-3xl font-mono font-bold text-gray-600">⏱ {minutes.toString().padStart(2,"0")}:{(seconds%60).toString().padStart(2,"0")}</div>;
+  return (
+    <div
+      className="text-2xl font-bold text-[#FFD700]"
+      style={{ fontFamily: "var(--font-press-start), monospace", textShadow: "2px 2px 0 rgba(0,0,0,0.6)" }}
+    >
+      ⏱ {minutes.toString().padStart(2, "0")}:{(seconds % 60).toString().padStart(2, "0")}
+    </div>
+  );
 }

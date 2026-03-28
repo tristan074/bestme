@@ -48,11 +48,11 @@ function ResultContent() {
 
   if (!result) {
     return (
-      <main className="min-h-screen bg-gradient-to-br from-blue-400 to-indigo-600 flex flex-col items-center justify-center gap-6">
-        <div className="text-white text-3xl">没有找到练习结果</div>
+      <main className="min-h-screen bg-[#2D2D2D] flex flex-col items-center justify-center gap-6">
+        <div className="text-white text-xl">没有找到练习结果</div>
         <button
           onClick={() => router.push("/math")}
-          className="bg-white text-blue-600 rounded-2xl px-8 py-4 text-2xl font-bold"
+          className="mc-btn mc-btn-green px-8 py-4 text-base"
         >
           返回
         </button>
@@ -64,43 +64,66 @@ function ResultContent() {
   const wrongQuestions = result.questions.filter((q) => !q.correct);
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-blue-400 via-blue-500 to-indigo-600 flex flex-col items-center p-8 gap-8">
+    <main className="min-h-screen bg-[#2D2D2D] flex flex-col items-center p-8 gap-8">
       {/* Header */}
       <div className="text-center">
         <div className="text-6xl mb-2">🎉</div>
-        <h1 className="text-4xl font-extrabold text-white drop-shadow">练习完成！</h1>
-        <p className="text-2xl text-white/80 mt-1">{SPECIALTY_LABELS[result.specialty] ?? result.specialty}</p>
+        <h1
+          className="text-2xl font-extrabold text-white"
+          style={{ fontFamily: "var(--font-press-start), monospace", textShadow: "3px 3px 0 rgba(0,0,0,0.6)" }}
+        >
+          练习完成！
+        </h1>
+        <p className="text-base text-[#AAAAAA] mt-2">{SPECIALTY_LABELS[result.specialty] ?? result.specialty}</p>
       </div>
 
       {/* Stat cards */}
       <div className="grid grid-cols-3 gap-4 w-full max-w-lg">
-        <div className="bg-white rounded-3xl p-6 flex flex-col items-center gap-1 shadow-xl">
-          <div className="text-5xl font-extrabold text-blue-600">{accuracy}%</div>
-          <div className="text-gray-500 text-lg font-medium">正确率</div>
+        <div className="mc-panel p-5 flex flex-col items-center gap-1">
+          <div
+            className="text-4xl font-extrabold text-[#2A9FD6]"
+            style={{ textShadow: "2px 2px 0 rgba(0,0,0,0.5)" }}
+          >
+            {accuracy}%
+          </div>
+          <div className="text-[#AAAAAA] text-sm font-medium">正确率</div>
         </div>
-        <div className="bg-white rounded-3xl p-6 flex flex-col items-center gap-1 shadow-xl">
-          <div className="text-5xl font-extrabold text-green-600">
+        <div className="mc-panel p-5 flex flex-col items-center gap-1">
+          <div
+            className="text-3xl font-extrabold text-[#5B8731]"
+            style={{ textShadow: "2px 2px 0 rgba(0,0,0,0.5)" }}
+          >
             {result.correctCount}/{result.totalCount}
           </div>
-          <div className="text-gray-500 text-lg font-medium">答对题数</div>
+          <div className="text-[#AAAAAA] text-sm font-medium">答对题数</div>
         </div>
-        <div className="bg-white rounded-3xl p-6 flex flex-col items-center gap-1 shadow-xl">
-          <div className="text-4xl font-extrabold text-indigo-600">{formatTime(result.totalMs)}</div>
-          <div className="text-gray-500 text-lg font-medium">用时</div>
+        <div className="mc-panel p-5 flex flex-col items-center gap-1">
+          <div
+            className="text-3xl font-extrabold text-[#FFD700]"
+            style={{ fontFamily: "var(--font-press-start), monospace", textShadow: "2px 2px 0 rgba(0,0,0,0.5)" }}
+          >
+            {formatTime(result.totalMs)}
+          </div>
+          <div className="text-[#AAAAAA] text-sm font-medium">用时</div>
         </div>
       </div>
 
       {/* Wrong answers */}
       {wrongQuestions.length > 0 && (
-        <div className="w-full max-w-lg bg-white rounded-3xl p-6 shadow-xl">
-          <h2 className="text-2xl font-bold text-gray-700 mb-4">错题回顾</h2>
+        <div className="w-full max-w-lg mc-panel p-6">
+          <h2
+            className="text-base font-bold text-[#FFD700] mb-4"
+            style={{ fontFamily: "var(--font-press-start), monospace", textShadow: "2px 2px 0 rgba(0,0,0,0.5)" }}
+          >
+            错题回顾
+          </h2>
           <div className="flex flex-col gap-3">
             {wrongQuestions.map((q, i) => (
-              <div key={i} className="flex items-center gap-4 bg-red-50 rounded-2xl p-4">
-                <span className="text-red-400 text-xl">✗</span>
-                <span className="text-xl font-bold text-gray-700">{q.expression} =</span>
-                <span className="text-xl line-through text-red-400">{q.userAnswer}</span>
-                <span className="text-xl font-bold text-green-600">{q.answer}</span>
+              <div key={i} className="flex items-center gap-4 bg-[#3A1A1A] border border-[#CC3333]/40 p-4">
+                <span className="text-[#CC3333] text-xl">✗</span>
+                <span className="text-lg font-bold text-white">{q.expression} =</span>
+                <span className="text-lg line-through text-[#CC3333]">{q.userAnswer}</span>
+                <span className="text-lg font-bold text-[#5B8731]">{q.answer}</span>
               </div>
             ))}
           </div>
@@ -113,13 +136,13 @@ function ResultContent() {
           onClick={() =>
             router.push(`/math/practice?specialty=${result.specialty}&count=${result.count}`)
           }
-          className="w-full py-5 rounded-3xl bg-yellow-400 text-white text-3xl font-extrabold shadow-xl active:scale-95 transition-transform"
+          className="mc-btn mc-btn-gold w-full py-5 text-lg active:scale-95"
         >
           再来一次 🔄
         </button>
         <button
           onClick={() => router.push("/math")}
-          className="w-full py-5 rounded-3xl bg-white/80 text-gray-700 text-3xl font-extrabold shadow-xl active:scale-95 transition-transform"
+          className="mc-btn w-full py-5 text-lg active:scale-95"
         >
           返回
         </button>
@@ -132,8 +155,13 @@ export default function ResultPage() {
   return (
     <Suspense
       fallback={
-        <main className="min-h-screen bg-gradient-to-br from-blue-400 to-indigo-600 flex items-center justify-center">
-          <div className="text-white text-4xl font-bold animate-pulse">加载中...</div>
+        <main className="min-h-screen bg-[#2D2D2D] flex items-center justify-center">
+          <div
+            className="text-white text-2xl animate-pulse"
+            style={{ fontFamily: "var(--font-press-start), monospace", textShadow: "2px 2px 0 rgba(0,0,0,0.5)" }}
+          >
+            加载中...
+          </div>
         </main>
       }
     >

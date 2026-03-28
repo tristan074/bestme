@@ -23,11 +23,16 @@ export default function MathPage() {
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-blue-400 via-blue-500 to-indigo-600 flex flex-col items-center justify-center p-8 gap-10">
-      <h1 className="text-5xl font-extrabold text-white drop-shadow-lg">数学练习</h1>
+    <main className="min-h-screen bg-[#2D2D2D] flex flex-col items-center justify-center p-8 gap-10">
+      <h1
+        className="text-3xl font-bold text-white"
+        style={{ fontFamily: "var(--font-press-start), monospace", textShadow: "3px 3px 0 rgba(0,0,0,0.6)" }}
+      >
+        数学练习
+      </h1>
 
       {/* Specialty cards */}
-      <div className="grid grid-cols-1 gap-6 w-full max-w-lg">
+      <div className="grid grid-cols-1 gap-4 w-full max-w-lg">
         {SPECIALTIES.map((s) => {
           const isSelected = selected === s.id;
           return (
@@ -35,19 +40,22 @@ export default function MathPage() {
               key={s.id}
               onClick={() => setSelected(s.id)}
               className={[
-                "flex items-center gap-6 rounded-3xl p-6 shadow-xl active:scale-95 transition-all text-left",
-                isSelected
-                  ? "bg-white ring-4 ring-yellow-400 scale-105"
-                  : "bg-white/80",
+                "mc-panel flex items-center gap-6 p-6 active:scale-95 transition-all text-left",
+                isSelected ? "brightness-150 outline outline-2 outline-[#FFD700]" : "hover:brightness-125",
               ].join(" ")}
             >
               <span className="text-5xl">{s.emoji}</span>
-              <div>
-                <div className="text-2xl font-bold text-gray-800">{s.title}</div>
-                <div className="text-lg text-gray-500">{s.description}</div>
+              <div className="flex-1">
+                <div
+                  className="text-base font-bold text-white"
+                  style={{ fontFamily: "var(--font-press-start), monospace", textShadow: "2px 2px 0 rgba(0,0,0,0.5)" }}
+                >
+                  {s.title}
+                </div>
+                <div className="text-sm text-[#AAAAAA] mt-1">{s.description}</div>
               </div>
               {isSelected && (
-                <span className="ml-auto text-3xl text-yellow-500">✓</span>
+                <span className="text-2xl text-[#FFD700]" style={{ textShadow: "2px 2px 0 rgba(0,0,0,0.5)" }}>✓</span>
               )}
             </button>
           );
@@ -56,17 +64,20 @@ export default function MathPage() {
 
       {/* Count selector */}
       <div className="flex flex-col items-center gap-4 w-full max-w-lg">
-        <div className="text-white text-2xl font-bold">题目数量</div>
-        <div className="flex gap-4">
+        <div
+          className="text-base text-white"
+          style={{ fontFamily: "var(--font-press-start), monospace", textShadow: "2px 2px 0 rgba(0,0,0,0.5)" }}
+        >
+          题目数量
+        </div>
+        <div className="flex gap-3">
           {COUNTS.map((n) => (
             <button
               key={n}
               onClick={() => setCount(n)}
               className={[
-                "w-20 h-20 rounded-2xl text-2xl font-bold shadow-md active:scale-95 transition-all",
-                count === n
-                  ? "bg-yellow-400 text-white scale-105"
-                  : "bg-white/80 text-gray-800",
+                "mc-btn w-20 h-20 text-xl active:scale-95",
+                count === n ? "mc-btn-gold" : "",
               ].join(" ")}
             >
               {n}
@@ -79,12 +90,7 @@ export default function MathPage() {
       <button
         onClick={handleStart}
         disabled={!selected}
-        className={[
-          "w-full max-w-lg py-6 rounded-3xl text-3xl font-extrabold shadow-xl transition-all",
-          selected
-            ? "bg-yellow-400 text-white active:scale-95"
-            : "bg-white/30 text-white/50 cursor-not-allowed",
-        ].join(" ")}
+        className="mc-btn mc-btn-green w-full max-w-lg py-6 text-xl active:scale-95"
       >
         开始练习 🚀
       </button>

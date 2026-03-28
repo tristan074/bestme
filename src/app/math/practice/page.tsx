@@ -131,17 +131,22 @@ function PracticeContent() {
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-gradient-to-br from-blue-400 to-indigo-600 flex items-center justify-center">
-        <div className="text-white text-4xl font-bold animate-pulse">加载中...</div>
+      <main className="min-h-screen bg-[#2D2D2D] flex items-center justify-center">
+        <div
+          className="text-white text-2xl animate-pulse"
+          style={{ fontFamily: "var(--font-press-start), monospace", textShadow: "2px 2px 0 rgba(0,0,0,0.5)" }}
+        >
+          加载中...
+        </div>
       </main>
     );
   }
 
   if (error || questions.length === 0) {
     return (
-      <main className="min-h-screen bg-gradient-to-br from-blue-400 to-indigo-600 flex flex-col items-center justify-center gap-6">
-        <div className="text-white text-3xl">{error ?? "没有题目"}</div>
-        <button onClick={() => router.push("/math")} className="bg-white text-blue-600 rounded-2xl px-8 py-4 text-2xl font-bold">
+      <main className="min-h-screen bg-[#2D2D2D] flex flex-col items-center justify-center gap-6">
+        <div className="text-white text-2xl">{error ?? "没有题目"}</div>
+        <button onClick={() => router.push("/math")} className="mc-btn mc-btn-green px-8 py-4 text-base">
           返回
         </button>
       </main>
@@ -152,44 +157,58 @@ function PracticeContent() {
   const progress = current / questions.length;
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-blue-400 via-blue-500 to-indigo-600 flex flex-col items-center p-8 gap-8">
+    <main className="min-h-screen bg-[#2D2D2D] flex flex-col items-center p-8 gap-8">
       {/* Header */}
       <div className="w-full max-w-lg flex items-center justify-between">
         <Timer running={timerRunning} onTick={handleTick} />
-        <div className="text-white text-2xl font-bold">
+        <div
+          className="text-white text-xl font-bold"
+          style={{ fontFamily: "var(--font-press-start), monospace", textShadow: "2px 2px 0 rgba(0,0,0,0.5)" }}
+        >
           {current + 1} / {questions.length}
         </div>
-        <div className="text-white/80 text-xl">{SPECIALTY_LABELS[specialty]}</div>
+        <div className="text-[#AAAAAA] text-sm">{SPECIALTY_LABELS[specialty]}</div>
       </div>
 
-      {/* Progress bar */}
-      <div className="w-full max-w-lg h-3 bg-white/30 rounded-full overflow-hidden">
+      {/* XP progress bar */}
+      <div className="w-full max-w-lg mc-xp-bar h-5 overflow-hidden">
         <div
-          className="h-full bg-yellow-400 transition-all duration-300"
+          className="mc-xp-bar-fill h-full"
           style={{ width: `${progress * 100}%` }}
         />
       </div>
 
-      {/* Question */}
+      {/* Question panel */}
       <div
         className={[
-          "w-full max-w-lg rounded-3xl p-10 flex flex-col items-center gap-4 shadow-2xl transition-colors duration-300",
+          "w-full max-w-lg mc-panel p-10 flex flex-col items-center gap-4 transition-colors duration-300",
           feedback === "correct"
-            ? "bg-green-100"
+            ? "outline outline-2 outline-[#5B8731]"
             : feedback === "wrong"
-            ? "bg-red-100"
-            : "bg-white",
+            ? "outline outline-2 outline-[#CC3333]"
+            : "",
         ].join(" ")}
       >
-        <div className="text-7xl font-extrabold text-gray-800 tracking-wide">
+        <div
+          className="text-6xl font-extrabold text-white tracking-wide"
+          style={{ textShadow: "3px 3px 0 rgba(0,0,0,0.6)" }}
+        >
           {q.expression} = ?
         </div>
 
         {feedback === "correct" && (
-          <div className="text-green-600 text-4xl font-bold">✓ 正确！</div>
+          <div
+            className="text-[#5B8731] text-3xl font-bold"
+            style={{ textShadow: "2px 2px 0 rgba(0,0,0,0.5)" }}
+          >
+            ✓ 正确！
+          </div>
         )}
         {feedback === "wrong" && (
-          <div className="text-red-600 text-3xl font-bold">
+          <div
+            className="text-[#CC3333] text-2xl font-bold text-center"
+            style={{ textShadow: "2px 2px 0 rgba(0,0,0,0.5)" }}
+          >
             ✗ 你答了 {wrongAnswer}，正确答案是 {q.answer}
           </div>
         )}
@@ -207,8 +226,13 @@ export default function PracticePage() {
   return (
     <Suspense
       fallback={
-        <main className="min-h-screen bg-gradient-to-br from-blue-400 to-indigo-600 flex items-center justify-center">
-          <div className="text-white text-4xl font-bold animate-pulse">加载中...</div>
+        <main className="min-h-screen bg-[#2D2D2D] flex items-center justify-center">
+          <div
+            className="text-white text-2xl animate-pulse"
+            style={{ fontFamily: "var(--font-press-start), monospace", textShadow: "2px 2px 0 rgba(0,0,0,0.5)" }}
+          >
+            加载中...
+          </div>
         </main>
       }
     >

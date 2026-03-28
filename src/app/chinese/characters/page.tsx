@@ -22,10 +22,11 @@ const STATUS_LABELS: Record<string, string> = {
   mastered: "已掌握",
 };
 
+// MC-themed status colors
 const STATUS_COLORS: Record<string, string> = {
-  unlearned: "bg-gray-100 text-gray-600",
-  learning: "bg-blue-100 text-blue-700",
-  mastered: "bg-green-100 text-green-700",
+  unlearned: "bg-[#3A3A3A] text-[#AAAAAA]",
+  learning: "bg-[#1A3A5A] text-[#2A9FD6]",
+  mastered: "bg-[#1A3A1A] text-[#5B8731]",
 };
 
 export default function CharactersPage() {
@@ -85,57 +86,67 @@ export default function CharactersPage() {
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-gradient-to-br from-red-400 to-pink-600 flex items-center justify-center">
-        <div className="text-white text-2xl">加载中...</div>
+      <main className="min-h-screen bg-[#2D2D2D] flex items-center justify-center">
+        <div
+          className="text-white text-xl animate-pulse"
+          style={{ fontFamily: "var(--font-press-start), monospace", textShadow: "2px 2px 0 rgba(0,0,0,0.5)" }}
+        >
+          加载中...
+        </div>
       </main>
     );
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-red-400 via-rose-500 to-pink-600 flex flex-col items-center p-8 gap-8">
-      <h1 className="text-4xl font-extrabold text-white drop-shadow-lg mt-4">生字库</h1>
+    <main className="min-h-screen bg-[#2D2D2D] flex flex-col items-center p-8 gap-8">
+      <h1
+        className="text-2xl font-bold text-white mt-4"
+        style={{ fontFamily: "var(--font-press-start), monospace", textShadow: "3px 3px 0 rgba(0,0,0,0.6)" }}
+      >
+        生字库
+      </h1>
 
       {!activeNotebook ? (
-        <div className="w-full max-w-lg rounded-3xl bg-white/90 p-6 text-center text-gray-500 text-xl shadow-xl">
+        <div className="w-full max-w-lg mc-panel p-6 text-center text-[#AAAAAA] text-base">
           还没有本子，请先
-          <a href="/chinese/notebooks" className="text-rose-500 font-bold ml-1">创建一个本子</a>
+          <a href="/chinese/notebooks" className="text-[#2A9FD6] font-bold ml-1">创建一个本子</a>
         </div>
       ) : (
         <>
-          <div className="w-full max-w-lg rounded-2xl bg-white/80 px-5 py-3 flex items-center gap-3 shadow">
+          <div className="w-full max-w-lg mc-panel px-5 py-3 flex items-center gap-3">
             <span className="text-xl">📔</span>
-            <span className="font-bold text-gray-800 text-lg">{activeNotebook.name}</span>
-            <span className="ml-auto text-gray-500">{characters.length} 个生字</span>
+            <span className="font-bold text-white text-base">{activeNotebook.name}</span>
+            <span className="ml-auto text-[#AAAAAA] text-sm">{characters.length} 个生字</span>
           </div>
 
           {/* Batch actions */}
           {selected.size > 0 && (
-            <div className="w-full max-w-lg rounded-2xl bg-white/90 p-4 shadow-xl flex flex-wrap items-center gap-3">
-              <span className="text-gray-700 font-bold">已选 {selected.size} 个</span>
+            <div className="w-full max-w-lg mc-panel p-4 flex flex-wrap items-center gap-3">
+              <span className="text-white font-bold text-sm">已选 {selected.size} 个</span>
               <button
                 onClick={() => handleBatchStatus("unlearned")}
                 disabled={updating}
-                className="px-4 py-2 rounded-xl bg-gray-100 text-gray-700 font-bold text-sm active:scale-95 transition-all"
+                className="mc-btn px-4 py-2 text-xs"
               >
                 标记未学
               </button>
               <button
                 onClick={() => handleBatchStatus("learning")}
                 disabled={updating}
-                className="px-4 py-2 rounded-xl bg-blue-100 text-blue-700 font-bold text-sm active:scale-95 transition-all"
+                className="mc-btn px-4 py-2 text-xs"
               >
                 加入学习
               </button>
               <button
                 onClick={() => handleBatchStatus("mastered")}
                 disabled={updating}
-                className="px-4 py-2 rounded-xl bg-green-100 text-green-700 font-bold text-sm active:scale-95 transition-all"
+                className="mc-btn mc-btn-green px-4 py-2 text-xs"
               >
                 标记掌握
               </button>
               <button
                 onClick={() => setSelected(new Set())}
-                className="ml-auto px-4 py-2 rounded-xl bg-gray-200 text-gray-500 text-sm active:scale-95 transition-all"
+                className="mc-btn ml-auto px-4 py-2 text-xs"
               >
                 取消
               </button>
@@ -143,18 +154,20 @@ export default function CharactersPage() {
           )}
 
           {characters.length === 0 ? (
-            <div className="text-white/70 text-xl text-center">
+            <div className="text-[#AAAAAA] text-base text-center">
               还没有生字，去
-              <a href="/chinese/import" className="text-yellow-300 font-bold ml-1">导入</a>
+              <a href="/chinese/import" className="text-[#FFD700] font-bold ml-1">导入</a>
               一些吧
             </div>
           ) : (
             <div className="w-full max-w-lg flex flex-col gap-6">
               {Object.entries(grouped).map(([lesson, chars]) => (
-                <div key={lesson} className="rounded-3xl bg-white/90 shadow-xl overflow-hidden">
-                  <div className="px-5 py-3 bg-white/60 font-bold text-gray-700 text-lg border-b border-gray-100">
+                <div key={lesson} className="mc-panel overflow-hidden">
+                  <div className="px-5 py-3 bg-[#3A3A3A] font-bold text-[#FFD700] text-sm border-b border-[#2D2D2D]"
+                    style={{ fontFamily: "var(--font-press-start), monospace", textShadow: "1px 1px 0 rgba(0,0,0,0.5)" }}
+                  >
                     {lesson}
-                    <span className="ml-2 text-gray-400 text-base font-normal">({chars.length}字)</span>
+                    <span className="ml-2 text-[#AAAAAA] text-xs font-normal">({chars.length}字)</span>
                   </div>
                   <div className="flex flex-wrap gap-3 p-4">
                     {chars.map((char) => {
@@ -164,15 +177,17 @@ export default function CharactersPage() {
                           key={char.id}
                           onClick={() => toggleSelect(char.id)}
                           className={[
-                            "flex flex-col items-center rounded-2xl px-4 py-3 min-w-[60px] transition-all active:scale-95 border-2",
+                            "flex flex-col items-center px-4 py-3 min-w-[60px] transition-all active:scale-95 border-2",
                             isSelected
-                              ? "border-rose-500 bg-rose-50 scale-105"
-                              : "border-transparent bg-gray-50",
+                              ? "border-[#FFD700] bg-[#3A3A1A] scale-105"
+                              : "border-[#6B6B6B] bg-[#3A3A3A] hover:brightness-125",
                           ].join(" ")}
                         >
-                          <span className="text-3xl font-bold text-gray-800">{char.char}</span>
-                          <span className="text-xs text-gray-500 mt-1">{char.pinyin}</span>
-                          <span className={`text-xs font-bold px-2 py-0.5 rounded-full mt-1 ${STATUS_COLORS[char.status]}`}>
+                          <span className="text-3xl font-bold text-white" style={{ textShadow: "1px 1px 0 rgba(0,0,0,0.5)" }}>
+                            {char.char}
+                          </span>
+                          <span className="text-xs text-[#AAAAAA] mt-1">{char.pinyin}</span>
+                          <span className={`text-xs font-bold px-2 py-0.5 mt-1 ${STATUS_COLORS[char.status]}`}>
                             {STATUS_LABELS[char.status]}
                           </span>
                         </button>
