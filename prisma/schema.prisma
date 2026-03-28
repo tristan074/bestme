@@ -1,0 +1,112 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+// -- Chinese Module --
+
+model Notebook {
+  id        Int      @id @default(autoincrement())
+  name      String
+  isActive  Boolean  @default(false)
+  archived  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  characters Character[]
+}
+
+model Character {
+  id         Int      @id @default(autoincrement())
+  char       String
+  pinyin     String
+  lesson     String   @default("")
+  status     String   @default("unlearned") // unlearned, learning, mastered
+  notebookId Int
+
+  notebook   Notebook @relation(fields: [notebookId], references: [id], onDelete: Cascade)
+  reviews    CharacterReview[]
+
+  @@unique([char, notebookId])
+}
+
+model CharacterReview {
+  id          Int      @id @default(autoincrement())
+  characterId Int
+  correct     Boolean
+  reviewDate  DateTime @default(now())
+
+  character   Character @relation(fields: [characterId], references: [id], onDelete: Cascade)
+}
+
+model ReviewSchedule {
+  id          Int      @id @default(autoincrement())
+  characterId Int      @unique
+  nextReview  DateTime
+  interval    Int      @default(0) // index into intervals array: [1,2,4,7,15]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// -- Math Module --
+
+model MathSession {
+  id           Int      @id @default(autoincrement())
+  specialty    String   // multiplication, carrying, two-digit
+  totalCount   Int
+  correctCount Int
+  totalTime    Int      // milliseconds
+  createdAt    DateTime @default(now())
+
+  questions  MathQuestion[]
+}
+
+model MathQuestion {
+  id         Int      @id @default(autoincrement())
+  sessionId  Int
+  expression String   // e.g. "7 × 8"
+  answer     Int      // correct answer
+  userAnswer Int
+  correct    Boolean
+  timeMs     Int      // time spent on this question in ms
+
+  session    MathSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+}
+
+model MathErrorBook {
+  id         Int      @id @default(autoincrement())
+  specialty  String
+  expression String
+  answer     Int
+  errorCount Int      @default(1)
+  lastError  DateTime @default(now())
+
+  @@unique([specialty, expression])
+}
+
+// -- Points & Achievements --
+
+model PointsLog {
+  id        Int      @id @default(autoincrement())
+  points    Int
+  reason    String
+  createdAt DateTime @default(now())
+}
+
+model Achievement {
+  id         Int      @id @default(autoincrement())
+  key        String   @unique
+  name       String
+  unlockedAt DateTime @default(now())
+}
+
+model DailyCheckin {
+  id        Int      @id @default(autoincrement())
+  date      String   @unique // YYYY-MM-DD
+  math      Boolean  @default(false)
+  chinese   Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
