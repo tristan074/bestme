@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 interface Notebook {
   id: number;
   name: string;
+  dailyLimit: number;
   isActive: boolean;
   archived: boolean;
   _count: { characters: number };
@@ -16,6 +17,8 @@ export default function NotebooksPage() {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editName, setEditName] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [editingLimitId, setEditingLimitId] = useState<number | null>(null);
+  const [editLimit, setEditLimit] = useState("");
 
   const fetchNotebooks = useCallback(async () => {
     const res = await fetch("/api/chinese/notebooks");
@@ -69,6 +72,20 @@ export default function NotebooksPage() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ id, archived: true }),
     });
+    await fetchNotebooks();
+  }
+
+  async function handleLimitChange(id: number) {
+    const val = parseInt(editLimit, 10);
+    if (isNaN(val) || val < 1) return;
+    setSubmitting(true);
+    await fetch("/api/chinese/notebooks", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id, dailyLimit: val }),
+    });
+    setEditingLimitId(null);
+    setSubmitting(false);
     await fetchNotebooks();
   }
 
@@ -149,7 +166,45 @@ export default function NotebooksPage() {
               )}
             </div>
 
-            <div className="text-[#AAAAAA] text-base">{nb._count.characters} 个生字</div>
+            <div className="text-[#AAAAAA] text-base">
+              <span className="mr-4">{nb._count.characters} 个生字</span>
+              每天上限：
+              {editingLimitId === nb.id ? (
+                <>
+                  <input
+                    type="number"
+                    min="1"
+                    max="200"
+                    value={editLimit}
+                    onChange={(e) => setEditLimit(e.target.value)}
+                    className="ml-2 w-16 bg-[#3A3A3A] border border-[#6B6B6B] px-2 py-1 text-white text-center outline-none"
+                    autoFocus
+                  />
+                  <button
+                    onClick={() => handleLimitChange(nb.id)}
+                    disabled={submitting}
+                    className="mc-btn mc-btn-green px-2 py-1 text-xs ml-1"
+                  >
+                    确定
+                  </button>
+                  <button
+                    onClick={() => setEditingLimitId(null)}
+                    className="mc-btn px-2 py-1 text-xs ml-1"
+                  >
+                    取消
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button
+                    onClick={() => { setEditingLimitId(nb.id); setEditLimit(String(nb.dailyLimit)); }}
+                    className="ml-2 text-[#FFD700] underline text-sm hover:text-white"
+                  >
+                    {nb.dailyLimit} 字
+                  </button>
+                </>
+              )}
+            </div>
 
             <div className="flex flex-wrap gap-2">
               {editingId === nb.id ? (

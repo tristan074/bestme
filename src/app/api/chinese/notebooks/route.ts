@@ -1,69 +1,83 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
-// GET: list non-archived notebooks with character count
+// GET: list all notebooks
 export async function GET() {
   try {
-  const notebooks = await prisma.notebook.findMany({
-    where: { archived: false },
-    include: { _count: { select: { characters: true } } },
-    orderBy: { createdAt: "asc" },
-  });
-  return NextResponse.json(notebooks);
+    const notebooks = await prisma.notebook.findMany({
+      orderBy: { createdAt: "asc" },
+    });
+    return NextResponse.json(notebooks);
   } catch (error) {
     console.error("API error:", error);
     return NextResponse.json({ error: "服务器错误，请重试" }, { status: 500 });
   }
 }
 
-// POST: create new notebook (deactivate others, set new as active)
-export async function POST(request: NextRequest) {
-  try {
-  const { name } = await request.json();
-  if (!name || typeof name !== "string") {
-    return NextResponse.json({ error: "name is required" }, { status: 400 });
-  }
-
-  await prisma.notebook.updateMany({ data: { isActive: false } });
-  const notebook = await prisma.notebook.create({
-    data: { name: name.trim(), isActive: true },
-  });
-  return NextResponse.json(notebook, { status: 201 });
-  } catch (error) {
-    console.error("API error:", error);
-    return NextResponse.json({ error: "服务器错误，请重试" }, { status: 500 });
-  }
-}
-
-// PATCH: update notebook (rename, activate, archive)
+// PATCH: update notebook (name, dailyLimit, isActive)
+// When dailyLimit changes, reschedules all pending learning characters
 export async function PATCH(request: NextRequest) {
   try {
-  const body = await request.json();
-  const { id, name, isActive, archived } = body as {
-    id: number;
-    name?: string;
-    isActive?: boolean;
-    archived?: boolean;
-  };
+    const body = await request.json();
+    const { id, dailyLimit, name, isActive } = body as {
+      id: number;
+      dailyLimit?: number;
+      name?: string;
+      isActive?: boolean;
+    };
 
-  if (!id) {
-    return NextResponse.json({ error: "id is required" }, { status: 400 });
-  }
+    if (!id) {
+      return NextResponse.json({ error: "id is required" }, { status: 400 });
+    }
 
-  // If activating, deactivate all others first
-  if (isActive) {
-    await prisma.notebook.updateMany({ data: { isActive: false } });
-  }
+    const notebook = await prisma.notebook.findUnique({ where: { id } });
+    if (!notebook) {
+      return NextResponse.json({ error: "notebook not found" }, { status: 404 });
+    }
 
-  const notebook = await prisma.notebook.update({
-    where: { id },
-    data: {
-      ...(name !== undefined && { name: name.trim() }),
-      ...(isActive !== undefined && { isActive }),
-      ...(archived !== undefined && { archived }),
-    },
-  });
-  return NextResponse.json(notebook);
+    // If dailyLimit changed, reschedule all pending learning characters
+    if (dailyLimit !== undefined && dailyLimit !== notebook.dailyLimit) {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      // Find all learning characters in this notebook with future review dates
+      const pendingChars = await prisma.character.findMany({
+        where: {
+          notebookId: id,
+          status: "learning",
+        },
+        orderBy: { id: "asc" },
+      });
+
+      const baseDate = new Date();
+      baseDate.setDate(baseDate.getDate() + 1);
+      baseDate.setHours(0, 0, 0, 0);
+
+      for (let i = 0; i < pendingChars.length; i++) {
+        const char = pendingChars[i];
+        const dayOffset = Math.floor(i / dailyLimit);
+        const nextReview = new Date(baseDate);
+        nextReview.setDate(nextReview.getDate() + dayOffset);
+
+        await prisma.reviewSchedule.upsert({
+          where: { characterId: char.id },
+          create: { characterId: char.id, nextReview, interval: 0 },
+          update: { nextReview, interval: 0 },
+        });
+      }
+    }
+
+    // Update notebook fields
+    const updated = await prisma.notebook.update({
+      where: { id },
+      data: {
+        ...(dailyLimit !== undefined && { dailyLimit }),
+        ...(name !== undefined && { name }),
+        ...(isActive !== undefined && { isActive }),
+      },
+    });
+
+    return NextResponse.json(updated);
   } catch (error) {
     console.error("API error:", error);
     return NextResponse.json({ error: "服务器错误，请重试" }, { status: 500 });
