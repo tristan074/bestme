@@ -7,6 +7,6 @@ export default defineConfig({
     path: "prisma/migrations",
   },
   datasource: {
-    url: `file:${path.resolve(__dirname, "prisma/bestme.db")}`,
+    url: "postgresql://openclaw@localhost:5433/bestme",
   },
 });
