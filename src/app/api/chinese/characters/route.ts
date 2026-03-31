@@ -84,17 +84,12 @@ export async function PATCH(request: NextRequest) {
     });
 
     if (status === "learning") {
-      // Find notebook's daily limit
-      const char = await prisma.character.findFirst({ where: { id: ids[0] } });
-      if (!char) {
-        return NextResponse.json({ error: "character not found" }, { status: 404 });
-      }
-      const notebook = await prisma.notebook.findUnique({ where: { id: char.notebookId } });
-      if (!notebook) {
-        return NextResponse.json({ error: "notebook not found" }, { status: 404 });
-      }
+      // Get global daily limit from SystemSetting
+      const setting = await prisma.systemSetting.findUnique({
+        where: { key: "chinese_daily_limit" },
+      });
+      const dailyLimit = setting ? parseInt(setting.value, 10) : 20;
 
-      const dailyLimit = notebook.dailyLimit;
       const baseDate = new Date();
       baseDate.setDate(baseDate.getDate() + 1);
       baseDate.setHours(0, 0, 0, 0);
