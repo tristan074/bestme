@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCharPinyin, parseCharacters } from "@/lib/chinese/pinyin";
+import { getExampleWord } from "@/lib/chinese/dictionary";
 
 // GET: list characters by notebookId, ordered by lesson then id
 export async function GET(request: NextRequest) {
@@ -46,12 +47,14 @@ export async function POST(request: NextRequest) {
 
     for (const char of chars) {
       const pinyinValue = getCharPinyin(char);
+      const exampleWord = getExampleWord(char);
       try {
         await prisma.character.create({
           data: {
             char,
             pinyin: pinyinValue,
             lesson: lesson?.trim() || "",
+            exampleWord,
             notebookId,
           },
         });

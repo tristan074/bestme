@@ -6,6 +6,7 @@ interface Character {
   id: number;
   char: string;
   pinyin: string;
+  exampleWord?: string;
 }
 
 type Mark = "unmarked" | "correct" | "wrong";
@@ -173,6 +174,9 @@ export default function DictationReviewPage() {
               {item.char.char}
             </span>
             <span className="text-sm text-[#AAAAAA] mt-1">{item.char.pinyin}</span>
+            {item.char.exampleWord && (
+              <span className="text-xs text-[#FFD700] mt-1">{item.char.exampleWord}</span>
+            )}
           </button>
         ))}
       </div>

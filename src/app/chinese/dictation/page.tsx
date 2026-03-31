@@ -6,6 +6,7 @@ interface Character {
   id: number;
   char: string;
   pinyin: string;
+  exampleWord?: string;
 }
 
 type Phase = "loading" | "empty" | "start" | "session" | "done";
@@ -114,6 +115,17 @@ export default function DictationPage() {
             今日听写
           </div>
           <div className="text-base text-[#AAAAAA]">共 {total} 个字需要复习</div>
+        </div>
+        {/* Preview of characters with example words */}
+        <div className="w-full max-w-lg bg-[#3A3A3A] rounded-lg p-4 flex flex-wrap gap-2 justify-center max-h-40 overflow-y-auto">
+          {characters.map((c) => (
+            <div key={c.id} className="flex flex-col items-center">
+              <span className="text-xl text-[#FFD700] font-bold">{c.char}</span>
+              {c.exampleWord && (
+                <span className="text-xs text-[#AAAAAA]">{c.exampleWord}</span>
+              )}
+            </div>
+          ))}
         </div>
         <button
           onClick={handleStart}

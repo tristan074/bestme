@@ -25,12 +25,13 @@ model SystemSetting {
 }
 
 model Character {
-  id         Int      @id @default(autoincrement())
-  char       String
-  pinyin     String
-  lesson     String   @default("")
-  status     String   @default("unlearned") // unlearned, learning, mastered
-  notebookId Int
+  id          Int      @id @default(autoincrement())
+  char        String
+  pinyin      String
+  lesson      String   @default("")
+  exampleWord String   @default("")
+  status      String   @default("unlearned") // unlearned, learning, mastered
+  notebookId  Int
 
   notebook   Notebook @relation(fields: [notebookId], references: [id], onDelete: Cascade)
   reviews    CharacterReview[]
