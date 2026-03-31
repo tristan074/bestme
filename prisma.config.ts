@@ -7,6 +7,6 @@ export default defineConfig({
     path: "prisma/migrations",
   },
   datasource: {
-    url: "postgresql://openclaw@localhost:5433/bestme",
+    url: process.env.DATABASE_URL ?? "postgresql://openclaw@localhost:5433/bestme",
   },
 });
