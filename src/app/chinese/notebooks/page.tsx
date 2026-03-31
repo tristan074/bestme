@@ -16,6 +16,7 @@ export default function NotebooksPage() {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editName, setEditName] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [showArchived, setShowArchived] = useState(false);
 
   const fetchNotebooks = useCallback(async () => {
     const res = await fetch("/api/chinese/notebooks");
@@ -67,7 +68,16 @@ export default function NotebooksPage() {
     await fetch("/api/chinese/notebooks", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id, archived: true }),
+      body: JSON.stringify({ id, archived: true, isActive: false }),
+    });
+    await fetchNotebooks();
+  }
+
+  async function handleUnarchive(id: number) {
+    await fetch("/api/chinese/notebooks", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id, archived: false }),
     });
     await fetchNotebooks();
   }
@@ -94,6 +104,8 @@ export default function NotebooksPage() {
         本子管理
       </h1>
 
+      <a href="/chinese" className="mc-btn px-4 py-2 text-sm self-start">← 返回</a>
+
       {/* Create new notebook */}
       <form onSubmit={handleCreate} className="w-full max-w-lg flex gap-3">
         <input
@@ -117,7 +129,9 @@ export default function NotebooksPage() {
         {notebooks.length === 0 && (
           <div className="text-center text-[#AAAAAA] text-base">还没有本子，创建一个吧</div>
         )}
-        {notebooks.map((nb) => (
+
+        {/* Active notebooks */}
+        {notebooks.filter((nb) => !nb.archived).map((nb) => (
           <div
             key={nb.id}
             className={[
@@ -201,6 +215,38 @@ export default function NotebooksPage() {
             </div>
           </div>
         ))}
+
+        {/* Archived notebooks */}
+        {notebooks.filter((nb) => nb.archived).length > 0 && (
+          <div className="flex flex-col gap-3 mt-4">
+            <button
+              onClick={() => setShowArchived((v) => !v)}
+              className="text-center text-[#AAAAAA] text-sm underline hover:text-white"
+            >
+              {showArchived ? "收起" : `已归档 (${notebooks.filter((nb) => nb.archived).length})`}
+            </button>
+            {showArchived && notebooks.filter((nb) => nb.archived).map((nb) => (
+              <div
+                key={nb.id}
+                className="mc-panel p-5 flex flex-col gap-3 opacity-60"
+              >
+                <div className="flex items-center gap-3">
+                  <span className="flex-1 text-xl font-bold text-white" style={{ textShadow: "1px 1px 0 rgba(0,0,0,0.5)" }}>
+                    {nb.name}
+                  </span>
+                  <span className="text-[#AAAAAA] text-xs">已归档</span>
+                </div>
+                <div className="text-[#AAAAAA] text-base">{nb._count.characters} 个生字</div>
+                <button
+                  onClick={() => handleUnarchive(nb.id)}
+                  className="mc-btn mc-btn-green px-4 py-2 text-xs w-fit"
+                >
+                  取消归档
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </main>
   );

@@ -41,16 +41,17 @@ export default function DictationPage() {
   }, []);
 
   function handleStart() {
+    if (characters.length === 0) return;
     setCurrentIndex(0);
     setPhase("session");
     // Small delay so state settles before speaking
     const first = characters[0];
-    setTimeout(() => speak(first.exampleWord || first.char), 100);
+    setTimeout(() => speak(first.exampleWord ? `${first.exampleWord}的${first.char}` : first.char), 100);
   }
 
   function handleReplay() {
     const cur = characters[currentIndex];
-    speak(cur.exampleWord || cur.char);
+    speak(cur.exampleWord ? `${cur.exampleWord}的${cur.char}` : cur.char);
   }
 
   function handleNext() {
@@ -60,8 +61,9 @@ export default function DictationPage() {
       sessionStorage.setItem("dictationChars", JSON.stringify(characters));
       router.push("/chinese/dictation/review");
     } else {
+      setCurrentIndex(next);
       const nxt = characters[next];
-      setTimeout(() => speak(nxt.exampleWord || nxt.char), 100);
+      setTimeout(() => speak(nxt.exampleWord ? `${nxt.exampleWord}的${nxt.char}` : nxt.char), 100);
     }
   }
 

@@ -54,16 +54,18 @@ export async function PATCH(request: NextRequest) {
           const nextReview = new Date(baseDate);
           nextReview.setDate(nextReview.getDate() + dayOffset);
 
-          await prisma.reviewSchedule.upsert({
+          // Use deleteMany + create to handle composite primary key [characterId, nextReview]
+          await prisma.reviewSchedule.deleteMany({
             where: { characterId: pendingChars[i].id },
-            create: { characterId: pendingChars[i].id, nextReview, interval: 0 },
-            update: { nextReview, interval: 0 },
+          });
+          await prisma.reviewSchedule.create({
+            data: { characterId: pendingChars[i].id, nextReview, interval: 0 },
           });
         }
       }
     }
 
-    return NextResponse.json(setting);
+    return NextResponse.json({ key: setting.key, value: setting.value });
   } catch (error) {
     console.error("API error:", error);
     return NextResponse.json({ error: "服务器错误，请重试" }, { status: 500 });

@@ -62,8 +62,9 @@ export default function ImportPage() {
 
   return (
     <main className="min-h-screen bg-[#2D2D2D] flex flex-col items-center p-8 gap-8">
+      <a href="/chinese" className="mc-btn px-4 py-2 text-sm self-start">← 返回</a>
       <h1
-        className="text-2xl font-bold text-white mt-4"
+        className="text-2xl font-bold text-white"
         style={{ fontFamily: "var(--font-press-start), monospace", textShadow: "3px 3px 0 rgba(0,0,0,0.6)" }}
       >
         导入生字

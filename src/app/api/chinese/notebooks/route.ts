@@ -6,6 +6,7 @@ export async function GET() {
   try {
     const notebooks = await prisma.notebook.findMany({
       orderBy: { createdAt: "asc" },
+      include: { _count: { select: { characters: true } } },
     });
     return NextResponse.json(notebooks);
   } catch (error) {
