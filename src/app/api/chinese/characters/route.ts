@@ -76,7 +76,7 @@ export async function PATCH(request: NextRequest) {
   const { ids, status } = body as { ids: number[]; status: string };
 
   if (!ids || !Array.isArray(ids) || ids.length === 0 || !status) {
-    return NextResponse.json({ error: "ids and status are required" }, { status: 400 });
+    return NextResponse.json({ error: "ids and status is required" }, { status: 400 });
   }
 
   await prisma.character.updateMany({
@@ -84,17 +84,25 @@ export async function PATCH(request: NextRequest) {
     data: { status },
   });
 
-  // If setting to learning, create ReviewSchedule with nextReview = tomorrow
+  // If setting to learning, stagger nextReview across multiple days
+  // to avoid dumping all characters into a single day's review queue
   if (status === "learning") {
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    tomorrow.setHours(0, 0, 0, 0);
+    const DAILY_LIMIT = Number(process.env.CHINESE_DAILY_LEARN_LIMIT ?? 20);
+    const baseDate = new Date();
+    baseDate.setDate(baseDate.getDate() + 1);
+    baseDate.setHours(0, 0, 0, 0);
 
-    for (const characterId of ids) {
+    for (let i = 0; i < ids.length; i++) {
+      // Spread: first DAILY_LIMIT chars → tomorrow,
+      // next DAILY_LIMIT → day after tomorrow, etc.
+      const dayOffset = Math.floor(i / DAILY_LIMIT);
+      const nextReview = new Date(baseDate);
+      nextReview.setDate(nextReview.getDate() + dayOffset);
+
       await prisma.reviewSchedule.upsert({
-        where: { characterId },
-        create: { characterId, nextReview: tomorrow, interval: 0 },
-        update: { nextReview: tomorrow, interval: 0 },
+        where: { characterId: ids[i] },
+        create: { characterId: ids[i], nextReview, interval: 0 },
+        update: { nextReview, interval: 0 },
       });
     }
   }
