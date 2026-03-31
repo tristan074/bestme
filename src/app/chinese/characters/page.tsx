@@ -106,6 +106,8 @@ export default function CharactersPage() {
         生字库
       </h1>
 
+      <a href="/chinese" className="mc-btn px-4 py-2 text-sm self-start">← 返回</a>
+
       {!activeNotebook ? (
         <div className="w-full max-w-lg mc-panel p-6 text-center text-[#AAAAAA] text-base">
           还没有本子，请先
@@ -163,11 +165,29 @@ export default function CharactersPage() {
             <div className="w-full max-w-lg flex flex-col gap-6">
               {Object.entries(grouped).map(([lesson, chars]) => (
                 <div key={lesson} className="mc-panel overflow-hidden">
-                  <div className="px-5 py-3 bg-[#3A3A3A] font-bold text-[#FFD700] text-sm border-b border-[#2D2D2D]"
-                    style={{ fontFamily: "var(--font-press-start), monospace", textShadow: "1px 1px 0 rgba(0,0,0,0.5)" }}
-                  >
-                    {lesson}
-                    <span className="ml-2 text-[#AAAAAA] text-xs font-normal">({chars.length}字)</span>
+                  <div className="px-5 py-3 bg-[#3A3A3A] flex items-center gap-2 border-b border-[#2D2D2D]">
+                    <button
+                      onClick={() => {
+                        const allIds = chars.map((c) => c.id);
+                        const allSelected = allIds.every((id) => selected.has(id));
+                        setSelected((prev) => {
+                          const next = new Set(prev);
+                          if (allSelected) allIds.forEach((id) => next.delete(id));
+                          else allIds.forEach((id) => next.add(id));
+                          return next;
+                        });
+                      }}
+                      className="text-xs text-[#FFD700] underline hover:text-white"
+                    >
+                      全选
+                    </button>
+                    <span
+                      className="font-bold text-[#FFD700] text-sm"
+                      style={{ fontFamily: "var(--font-press-start), monospace", textShadow: "1px 1px 0 rgba(0,0,0,0.5)" }}
+                    >
+                      {lesson}
+                    </span>
+                    <span className="ml-2 text-[#AAAAAA] text-xs">({chars.length}字)</span>
                   </div>
                   <div className="flex flex-wrap gap-3 p-4">
                     {chars.map((char) => {

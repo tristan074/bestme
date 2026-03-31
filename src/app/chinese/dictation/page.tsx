@@ -6,6 +6,7 @@ interface Character {
   id: number;
   char: string;
   pinyin: string;
+  exampleWord?: string;
 }
 
 type Phase = "loading" | "empty" | "start" | "session" | "done";
@@ -29,25 +30,28 @@ export default function DictationPage() {
       });
   }, []);
 
-  // Speak the pinyin of the current character using Web Speech API
-  const speak = useCallback((pinyin: string) => {
+  // Speak the example word (or pinyin if no example word) using Web Speech API
+  const speak = useCallback((text: string) => {
     if (typeof window === "undefined" || !window.speechSynthesis) return;
     window.speechSynthesis.cancel();
-    const utter = new SpeechSynthesisUtterance(pinyin);
+    const utter = new SpeechSynthesisUtterance(text);
     utter.lang = "zh-CN";
     utter.rate = 0.8;
     window.speechSynthesis.speak(utter);
   }, []);
 
   function handleStart() {
+    if (characters.length === 0) return;
     setCurrentIndex(0);
     setPhase("session");
     // Small delay so state settles before speaking
-    setTimeout(() => speak(characters[0].pinyin), 100);
+    const first = characters[0];
+    setTimeout(() => speak(first.exampleWord ? `${first.exampleWord}的${first.char}` : first.char), 100);
   }
 
   function handleReplay() {
-    speak(characters[currentIndex].pinyin);
+    const cur = characters[currentIndex];
+    speak(cur.exampleWord ? `${cur.exampleWord}的${cur.char}` : cur.char);
   }
 
   function handleNext() {
@@ -58,7 +62,8 @@ export default function DictationPage() {
       router.push("/chinese/dictation/review");
     } else {
       setCurrentIndex(next);
-      setTimeout(() => speak(characters[next].pinyin), 100);
+      const nxt = characters[next];
+      setTimeout(() => speak(nxt.exampleWord ? `${nxt.exampleWord}的${nxt.char}` : nxt.char), 100);
     }
   }
 
@@ -114,6 +119,17 @@ export default function DictationPage() {
             今日听写
           </div>
           <div className="text-base text-[#AAAAAA]">共 {total} 个字需要复习</div>
+        </div>
+        {/* Preview of characters with example words */}
+        <div className="w-full max-w-lg bg-[#3A3A3A] rounded-lg p-4 flex flex-wrap gap-2 justify-center max-h-40 overflow-y-auto">
+          {characters.map((c) => (
+            <div key={c.id} className="flex flex-col items-center">
+              <span className="text-xl text-[#FFD700] font-bold">{c.char}</span>
+              {c.exampleWord && (
+                <span className="text-xs text-[#AAAAAA]">{c.exampleWord}</span>
+              )}
+            </div>
+          ))}
         </div>
         <button
           onClick={handleStart}
